@@ -5,38 +5,32 @@
 #include <vector>
 
 using namespace std;
-
 class person_info
 {
 private :
     fstream users;
-
-public :
     string username;
     string birthdate;
     string first_name;
     string last_name;
     string password;
+
+public :
+    //function for setting the username and pass
+    //called when ever the user attends to login
     string setting_login_info(string loggedin_username= " " ,string loggedin_password= " "){
         this->username = loggedin_username;
         this->password = loggedin_password;
         return loggedin_username;
     }
-    friend void accountPage();
+    
+
+    //function for registering the user info
     void register_user()
     {
-
-        /*
-        fstream MyFile("users1.txt" ,ios::app);
-        fstream m*/
+        
         ofstream myfile1("userpass.txt", ios::app);
 		if (!myfile1.is_open()) {
-			cout << "could not open file \n";
-		}
-
-		//Store other details in customer file
-		ofstream myfile2("customer.txt", ios::app);
-		if (!myfile2.is_open()) {
 			cout << "could not open file \n";
 		}
 
@@ -46,39 +40,35 @@ public :
         cin>>last_name;
         cout<<"enter your birthdate:"<<endl;
         cin>>birthdate;
-        myfile2 << first_name << "  " << last_name << "  " << birthdate <<endl;
         cout<<"enter username:"<<endl;
         cin>>username;
         cout<<"enter password:"<<endl;
         cin >> password;
         cout<<"registered successfully"<<endl;
-        myfile1 <<username << "  "<< password << endl;
+        myfile1 <<username<<"  "<<password<<"  "<<first_name<<"  "<<last_name<<"  "<<birthdate<<endl;
         myfile1.close();
 
     }
 
+
+
     //Log in page
 	bool login(string inUser,string inPass)
 	{
-        
-        
-		do
+        bool status = false;
+        ifstream myfile1("userpass.txt");
+		if (CheckCredentials(inUser, inPass) == true)
 		{
+			cout << "Welcome, " <<inUser<< endl;
+            setting_login_info(inUser,inPass);
+			status = true;
+		}
 
-
-			if (CheckCredentials(inUser, inPass) == true)
-			{
-				cout << "Welcome, " << inUser << endl;
-                setting_login_info(inUser,inPass);
-				return true;
-			}
-			else
-			cout << "\nInvalid username or password. " << endl;
-		} while (CheckCredentials(inUser, inPass) != true);
-
-		return CheckCredentials(inUser,inPass);
+        return status;	
 	}
-
+    
+    //this function takes the input username and pass
+    //and checks if it matches with any of the database in our txt file.
     bool CheckCredentials(const string& inUser, const string& inPass)
     {
 		string line = "  ";
@@ -86,8 +76,7 @@ public :
 		bool status = false;
 		while (getline(myfile1,line)){
             stringstream iss(line);
-            iss >> username >> password;
-
+            iss>>username>>password;
             if (inUser == username && inPass == password) {
                 cout << "Login Successfully!"<< endl;
                 status = true;
@@ -102,13 +91,12 @@ public :
 		return status;
     }
 
-
-
 };
 
 
 class library
 {
+    //private attributes of class
 	private:
 	    string title;
 	    string shelf_num;
@@ -125,13 +113,7 @@ class library
 
 	public:
         
-        string username_account()
-        {
-            person_info user;
-            string username_acc = user.setting_login_info();
-            return username_acc;
-
-        }
+        //this function search for the book and checks if it exists in the library or not
 		bool search()
 		{
 
@@ -140,8 +122,9 @@ class library
 			int choice3=0;
 			int choice4=0;
 			string s;
-			cout<<"Enter the feature of the book your searching for" << endl;
-			cout<<"1.Title - 2-Authors - 3.Publisher - 4.Published_year";
+			cout<<"Here is our Menu!\nTitle -Authors - Publisher - Published_year"<<endl;
+            cout<<"If you don't want to search according to any feature put 0 and if you do put 1"<<endl;
+            cout<<"For exp: if you want to search for title and published year, Enter 1 0 0 1"<<endl;
 			cin>>choice1>>choice2>>choice3>>choice4;
 			string line = " ";
 			ifstream myfile3("books.txt");
@@ -166,7 +149,7 @@ class library
 
 			}
 
-			if(choice2==2 && choice1==0 && choice3==0 && choice4==0)
+			if(choice2==1 && choice1==0 && choice3==0 && choice4==0)
 			{
 				cout << "Enter the name of the authors of book you are looking for";
 				cin >> s;
@@ -174,6 +157,7 @@ class library
                     stringstream iss(line);
                     iss >>title >>shelf_num>> authors;
                     if (s == authors ) {
+                        cout << "The title of the book is:" << title << endl;
                         cout << "The book was Successfully found!"<< endl;
                         status = true;
                         break;
@@ -186,7 +170,7 @@ class library
 
 			}
 
-            if(choice3==3 && choice2==0 && choice1==0 && choice4==0)
+            if(choice3==1 && choice2==0 && choice1==0 && choice4==0)
 			{
 				cout << "Enter the publisher of the book you are looking for";
 				cin >> s;
@@ -194,6 +178,7 @@ class library
                     stringstream iss(line);
                     iss >>title >>shelf_num>> authors >> edition >> publisher;
                     if (s == publisher ) {
+                        cout << "The title of the book is:" << title << endl;
                         cout << "The book was Successfully found!"<< endl;
                         status = true;
                         break;
@@ -206,7 +191,7 @@ class library
 
 			}
 
-            if(choice4==4 && choice2==0 && choice3==0 && choice1==0)
+            if(choice4==1 && choice2==0 && choice3==0 && choice1==0)
 			{
 				cout << "Enter the title of the book you are looking for";
 				cin >> s;
@@ -214,6 +199,7 @@ class library
                     stringstream iss(line);
                     iss >>title >>shelf_num>> authors >> edition >> publisher >> published_year;
                     if (s == published_year ) {
+                        cout << "The title of the book is:" << title << endl;
                         cout << "The book was Successfully found!"<< endl;
                         status = true;
                         break;
@@ -226,7 +212,7 @@ class library
 
 			}
 
-            if(choice1==1 && choice2==2 && choice3==0 && choice4==0)
+            if(choice1==1 && choice2==1 && choice3==0 && choice4==0)
 			{
 				cout << "Enter the title of the book you are looking for: ";
 				cin >> s;
@@ -249,7 +235,7 @@ class library
 
 			}
 
-            if(choice1==1 && choice3==3 && choice2==0 && choice4==0)
+            if(choice1==1 && choice3==1 && choice2==0 && choice4==0)
 			{
 				cout << "Enter the title of the book you are looking for: ";
 				cin >> s;
@@ -272,7 +258,7 @@ class library
 
 			}
 
-            if(choice1==1 && choice4==4 && choice3==0 && choice2==0)
+            if(choice1==1 && choice4==1 && choice3==0 && choice2==0)
 			{
 				cout << "Enter the title of the book you are looking for: ";
 				cin >> s;
@@ -295,7 +281,7 @@ class library
 
 			}
 
-            if(choice2==2 && choice3==3 && choice1==0 && choice4==0)
+            if(choice2==1 && choice3==1 && choice1==0 && choice4==0)
 			{
 				cout << "Enter the name of the authors of the book you are looking for: ";
 				cin >> s;
@@ -306,6 +292,7 @@ class library
                     stringstream iss(line);
                     iss >>title >>shelf_num>> authors >> edition >> publisher;
                     if (s == authors && s1 == publisher ) {
+                        cout << "The title of the book is:" << title << endl;
                         cout << "The book was Successfully found!"<< endl;
                         status = true;
                         break;
@@ -318,7 +305,7 @@ class library
 
 			}
 
-            if(choice2==2 && choice4==4 && choice3==0 && choice1==0)
+            if(choice2==1 && choice4==1 && choice3==0 && choice1==0)
 			{
 				cout << "Enter the name of the authors of the book you are looking for: ";
 				cin >> s;
@@ -329,6 +316,7 @@ class library
                     stringstream iss(line);
                     iss >>title >>shelf_num>> authors >> edition >> publisher >> published_year;
                     if (s == authors && s1 == published_year ) {
+                        cout << "The title of the book is:" << title << endl;
                         cout << "The book was Successfully found!"<< endl;
                         status = true;
                         break;
@@ -341,7 +329,7 @@ class library
 
 			}
 
-            if(choice3==3 && choice4==4 && choice1==0 && choice2==0)
+            if(choice3==1 && choice4==1 && choice1==0 && choice2==0)
 			{
 				cout << "Enter the name of the publisher of the book you are looking for: ";
 				cin >> s;
@@ -352,6 +340,7 @@ class library
                     stringstream iss(line);
                     iss >>title >>shelf_num>> authors >> edition >> publisher>>published_year;
                     if (s == publisher && s1 == published_year ) {
+                        cout << "The title of the book is:" << title << endl;
                         cout << "The book was Successfully found!"<< endl;
                         status = true;
                         break;
@@ -364,7 +353,7 @@ class library
 
 			}
 
-            if(choice1==1 && choice2==2 && choice3==3 && choice4==0)
+            if(choice1==1 && choice2==1 && choice3==1 && choice4==0)
 			{
 				cout << "Enter the title of the book you are looking for: ";
 				cin >> s;
@@ -390,7 +379,7 @@ class library
 
 			}
 
-			if(choice1==1 && choice2==2 && choice4==4 && choice3==0)
+			if(choice1==1 && choice2==1 && choice4==1 && choice3==0)
 			{
 				cout << "Enter the title of the book you are looking for: ";
 				cin >> s;
@@ -416,7 +405,7 @@ class library
 
 			}
 
-			if(choice1==1 && choice3==3 && choice4==4 && choice2==0)
+			if(choice1==1 && choice3==1 && choice4==1 && choice2==0)
 			{
 				cout << "Enter the title of the book you are looking for: ";
 				cin >> s;
@@ -442,7 +431,7 @@ class library
 
 			}
 
-			if(choice2==2 && choice3==3 && choice4==4 && choice1==0)
+			if(choice2==1 && choice3==1 && choice4==1 && choice1==0)
 			{
 				cout << "Enter the name of the authors of the book you are looking for: ";
 				cin >> s;
@@ -456,6 +445,7 @@ class library
                     stringstream iss(line);
                     iss >>title >>shelf_num>> authors >> edition >> publisher >> published_year;
                     if (s == authors && s1 == publisher && s2 == published_year ) {
+                        cout << "The title of the book is:" << title << endl;
                         cout << "The book was Successfully found!"<< endl;
                         status = true;
                         break;
@@ -468,7 +458,7 @@ class library
 
 			}
 
-            if(choice1 == 1 && choice2==2 && choice3==3 && choice4==4)
+            if(choice1 == 1 && choice2==1 && choice3==1 && choice4==1)
 			{
 				cout << "Enter the title of the book you are looking for: ";
 				cin >> s;
@@ -500,15 +490,19 @@ class library
             return status;
 
 		}
-
+        
+        //this function reserves the book the user wants
+        //if the user has 2 or more books borrowed in their account it doesnt reserves the book
+        //it also changes the user id in the books.txt file to the logged in account
+        //and changes the attribute status_book from free to reserved
         void reserve(string username_account)
         {
+            library user;
             person_info a;
             string b;
             string n;
             bool d = false;
-            cout<<"If you want to reserve a book,First you have to check if it is found or not by search function"<<endl;
-            cout<<"Do you want to reserve any book or not:(yes/no) "<<endl;
+            cout<<"To continue reserving any book enter yes or no:(yes/no) "<<endl;
             cin>>b;
             cout << "Enter the title of the book you want to reserve: "<<endl;
             cin>>n;
@@ -554,12 +548,14 @@ class library
 
                         else if(status_book == "reserved")
                         {
-                            cout <<"Sorry!The book is reserved by someone else";
+                            cout <<"Sorry!The book is borrowed by someone else";
                         }
                     }
                     line_num++;
                 }
-
+                
+                //this if clause is written to check if anything has been changed so it changes the file
+                //if no book has been borrowed so the file remains as it was
                 if(d)
                 {
                     ofstream output("books.txt");
@@ -581,7 +577,9 @@ class library
             }
 
         }
+        
 
+        //checks if the user had 2 or more books or not
         bool maxbook(string username_account)
         {
             int count=0;
@@ -603,6 +601,10 @@ class library
 
         }
 
+
+        //this function returns the book
+        //it changes the user_id from the logged in user to Null
+        //it also changes the status_book from reserved to free so that other people can borrow it
         void returning(string username_account)
         {
             int line_num=0;
@@ -615,6 +617,9 @@ class library
             bool status=false;
             ifstream read_line;
             read_line.open("books.txt");
+
+            //here we put all the lines in the file into a vector
+            //therefore we can use this vector to re-write on the file
             vector<string> lines;
             while(getline(read_line,line))
             {
@@ -656,7 +661,7 @@ class library
 
 int main()
 {
-
+    library user;
     person_info person;
     string ans;
     string login_username;
@@ -665,14 +670,14 @@ int main()
     int Choice1;
 	bool t=false;
     bool d=false;
-    cout << "Welcome to Cozy Homes!\n";
+    cout << "Welcome to out library!\n";
 	cout << "Operating hours: 11am - 10pm Tuesday - Sunday\n\n\n\n";
 
 	do {
 		cout << "\n1. Register\n";
 		cout << "2. Log In\n";
 		cout << "3. Exit\n";
-		cout << "please enter a number";
+		cout << "please enter a number"<<endl;
 		cin >> Choice1;
     
 		if (Choice1 == 1)
@@ -711,15 +716,16 @@ int main()
 
     if(t)
 	{
-		library user;
 	    int Choice2;
+        cout << "Remember,If you want to reserve any book,\nFirst check if the book exists in the library or not"<<endl;
 	    do
 	    {
+            
 		    cout << "1. searching book"<<endl;
 		    cout << "2. reserve a book"<<endl;
 		    cout << "3. returning book"<<endl;
 		    cout << "4. Logout"<<endl;
-			cout << "please enter a number";
+			cout << "please enter a number"<<endl;
 		    cin >> Choice2;
 
 		    if (Choice2 == 1)
@@ -739,7 +745,7 @@ int main()
 		    }
 		    else if (Choice2 == 4)
 		    {
-			    cout << "Logging out.....\n\n\n\n";
+			    cout << "Logging out.....\n\n";
 			    cout << endl;
 		    }
 	    } while (Choice2 != 4);
